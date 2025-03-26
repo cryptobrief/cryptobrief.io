@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { FiSun, FiMoon, FiSearch } from 'react-icons/fi';
+import { Article } from '@/lib/types'; // This is where you import the Article type
 
 export default function Header({ articles = [] }: { articles?: Article[] }) {  // Default to an empty array
   const { theme, setTheme } = useTheme();
