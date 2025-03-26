@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/theme-provider'; // Ensure you're importing the updated ThemeProvider
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -20,8 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-900`}>
+    <html lang="en">
+      <body 
+        className={`${inter.className} min-h-screen bg-white dark:bg-gray-900`} 
+        suppressHydrationWarning
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <Suspense fallback={<div>Loading...</div>}>
             <Header />

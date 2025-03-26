@@ -8,7 +8,7 @@ export default function NewsGrid() {
   const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
 
-  // Define your static articles separately
+  // Define your static articles separately and add content and category
   const staticArticles: Article[] = [
     {
       id: 'bitcoin-atm-risks',
@@ -18,8 +18,10 @@ export default function NewsGrid() {
       source: 'CryptoBrief.io',
       publishedAt: '2025-03-26',
       url: '/news/bitcoin-atm-risks',
+      content: 'Bitcoin ATMs, also known as BTMs, are rapidly becoming a common sight, offering users the convenience of buying and selling Bitcoin using cash or a card. These machines function similarly to traditional bank ATMs but with a unique digital touch. But with the rising popularity of BTMs, there’s also an increased risk of scams. Here’s everything you need to know...',
+      category: 'Bitcoin',  // Add the appropriate category
     },
-    // Add more static articles here if desired
+    // You can add more static articles here, following the same structure
   ];
 
   useEffect(() => {
