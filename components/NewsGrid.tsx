@@ -8,33 +8,18 @@ export default function NewsGrid() {
   const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
 
-  // Define your static articles separately and add content and category
-  const staticArticles: Article[] = [
-    {
-      id: 'bitcoin-atm-risks',
-      title: 'Bitcoin ATMs: Convenience Meets Risk—Here’s What You Need to Know',
-      summary: 'Bitcoin ATMs offer easy crypto transactions, but beware of scams. Learn how to stay safe.',
-      imageUrl: '/images/bitcoin-atm.jpg', // ensure this image exists in public/images/
-      source: 'CryptoBrief.io',
-      publishedAt: '2025-03-26',
-      url: '/news/bitcoin-atm-risks',
-      content: 'Bitcoin ATMs, also known as BTMs, are rapidly becoming a common sight, offering users the convenience of buying and selling Bitcoin using cash or a card. These machines function similarly to traditional bank ATMs but with a unique digital touch. But with the rising popularity of BTMs, there’s also an increased risk of scams. Here’s everything you need to know...',
-      category: 'Bitcoin',  // Add the appropriate category
-    },
-    // You can add more static articles here, following the same structure
-  ];
-
   useEffect(() => {
     setMounted(true);
 
-    // Fetch your dynamic articles (future implementation)
+    // Fetch the dynamic articles and limit to 9
     async function fetchArticles() {
       try {
         const fetchedArticles: Article[] = await fetch('/api/news').then(res => res.json());
-        setArticles([...staticArticles, ...fetchedArticles]);
+        // Limit to the first 9 articles
+        setArticles(fetchedArticles.slice(0, 9));
       } catch (error) {
         console.error('Error fetching articles:', error);
-        setArticles(staticArticles); // Fallback to static if API fails
+        setArticles([]); // Handle errors by showing no articles or fallback content
       }
     }
 

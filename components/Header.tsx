@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { FiSun, FiMoon, FiSearch } from 'react-icons/fi';
 
-export default function Header() {
+export default function Header({ articles = [] }: { articles?: Article[] }) {  // Default to an empty array
   const { theme, setTheme } = useTheme();
 
   return (
@@ -18,6 +18,12 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <Link href="/news" className="hover:text-blue-600 transition-colors">News</Link>
+            {/* Add link for the latest article */}
+            {articles.length > 0 && (
+              <Link href={articles[0].url} className="hover:text-blue-600 transition-colors">
+                {articles[0].title}
+              </Link>
+            )}
             <Link href="/prices" className="hover:text-blue-600 transition-colors">Prices</Link>
             <Link href="/guides" className="hover:text-blue-600 transition-colors">Guides</Link>
             <Link href="/tools" className="hover:text-blue-600 transition-colors">Tools</Link>
