@@ -1,4 +1,7 @@
 // app/api/news/route.ts
+
+export const runtime = 'edge'; // Add this line to use Edge Runtime
+
 import { NextResponse } from 'next/server';
 
 export async function GET() {
