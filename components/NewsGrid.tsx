@@ -1,14 +1,42 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import type { Article } from '@/lib/types';
 
 export default function NewsGrid() {
   const [mounted, setMounted] = useState(false);
-  const [articles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+
+  // Define your static articles separately
+  const staticArticles: Article[] = [
+    {
+      id: 'bitcoin-atm-risks',
+      title: 'Bitcoin ATMs: Convenience Meets Risk—Here’s What You Need to Know',
+      summary: 'Bitcoin ATMs offer easy crypto transactions, but beware of scams. Learn how to stay safe.',
+      imageUrl: '/images/bitcoin-atm.jpg', // ensure this image exists in public/images/
+      source: 'CryptoBrief.io',
+      publishedAt: '2025-03-26',
+      url: '/news/bitcoin-atm-risks',
+    },
+    // Add more static articles here if desired
+  ];
 
   useEffect(() => {
     setMounted(true);
+
+    // Fetch your dynamic articles (future implementation)
+    async function fetchArticles() {
+      try {
+        const fetchedArticles: Article[] = await fetch('/api/news').then(res => res.json());
+        setArticles([...staticArticles, ...fetchedArticles]);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        setArticles(staticArticles); // Fallback to static if API fails
+      }
+    }
+
+    fetchArticles();
   }, []);
 
   if (!mounted) {
@@ -35,19 +63,21 @@ export default function NewsGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {articles.map((article) => (
-        <article key={article.id} className="card">
-          <img
-            src={article.imageUrl}
-            alt={article.title}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
-          <h2 className="text-xl font-bold mb-2">{article.title}</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{article.summary}</p>
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>{article.source}</span>
-            <span>{article.publishedAt}</span>
-          </div>
-        </article>
+        <Link key={article.id} href={article.url}>
+          <article className="card cursor-pointer hover:shadow-lg transition-shadow">
+            <img
+              src={article.imageUrl}
+              alt={article.title}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
+            <h2 className="text-xl font-bold mb-2">{article.title}</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{article.summary}</p>
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <span>{article.source}</span>
+              <span>{article.publishedAt}</span>
+            </div>
+          </article>
+        </Link>
       ))}
     </div>
   );
