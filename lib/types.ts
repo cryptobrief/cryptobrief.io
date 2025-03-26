@@ -1,0 +1,27 @@
+export interface Article {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  url: string;
+  imageUrl: string;
+  source: string;
+  category: string;
+  publishedAt: string;
+}
+
+export interface CryptoPrice {
+  id: string;
+  symbol: string;
+  name: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+  market_cap: number;
+  total_volume: number;
+}
+
+export interface MarketSentiment {
+  value: number;
+  classification: 'Extreme Fear' | 'Fear' | 'Neutral' | 'Greed' | 'Extreme Greed';
+  timestamp: string;
+}
