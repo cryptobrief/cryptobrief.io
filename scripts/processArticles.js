@@ -1,11 +1,21 @@
+require('dotenv').config();  // This loads the .env file
+
 const axios = require('axios');
 const xml2js = require('xml2js');
 const { OpenAI } = require('openai');
+const readline = require('readline'); // Import the readline module
+
 const openai = new OpenAI({
-  apiKey: 'YOUR_OPENAI_API_KEY',
+  apiKey: process.env.OPENAI_API_KEY,  // Use the API key from the .env file
 });
 
 const RSS_FEED_URL = 'https://rss.app/feeds/tlDFsJf2MSfigEaG.xml';
+
+// Create readline interface for user input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 async function fetchRSS() {
   try {
@@ -25,7 +35,7 @@ async function fetchRSS() {
 
 async function rewriteArticle(content) {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4', 
+    model: 'gpt-4',
     messages: [
       { role: 'system', content: 'You are a helpful assistant.' },
       { role: 'user', content: `Rewrite this article for a more engaging and concise style:\n\n${content}` },
@@ -41,18 +51,21 @@ async function processArticles() {
     console.log('Original:', article.title);
     console.log('Link:', article.link);
     console.log('Description:', article.description);
-    
+
     const rewrittenContent = await rewriteArticle(article.description);
     console.log('Rewritten Content:', rewrittenContent);
 
-    // Manually approve and publish, for now logging to the console
-    const isApproved = confirm('Do you approve this content?'); // You can replace this with your manual process
-    
-    if (isApproved) {
-      console.log('Publishing:', rewrittenContent);
-    } else {
-      console.log('Rejected:', rewrittenContent);
-    }
+    // Replace confirm with readline to ask user for approval
+    rl.question('Do you approve this content? (yes/no): ', (answer) => {
+      if (answer.toLowerCase() === 'yes') {
+        console.log('Publishing:', rewrittenContent);
+      } else {
+        console.log('Rejected:', rewrittenContent);
+      }
+
+      // Close readline interface after user input
+      rl.close();
+    });
   }
 }
 
