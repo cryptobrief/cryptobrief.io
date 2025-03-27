@@ -1,13 +1,17 @@
+import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
+
 export interface Article {
   id: string;
   title: string;
   summary: string;
-  content: string;
+  content: string | MDXRemoteSerializeResult;
   url: string;
   imageUrl: string;
   source: string;
   category: string;
   publishedAt: string;
+  categories?: string[];
+  tags?: string[];
 }
 
 export interface CryptoPrice {

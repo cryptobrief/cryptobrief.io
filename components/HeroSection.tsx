@@ -5,20 +5,33 @@ import { formatDistanceToNow } from 'date-fns';
 import type { MarketSentiment } from '@/lib/types';
 
 export default function HeroSection() {
-  const [mounted, setMounted] = useState(false);
   const [sentiment, setSentiment] = useState<MarketSentiment>({
     value: 50,
     classification: 'Neutral',
     timestamp: new Date().toISOString()
   });
+  const [loading, setLoading] = useState(false);
+
+  async function fetchSentiment() {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/sentiment');
+      if (!response.ok) throw new Error('Failed to fetch sentiment');
+      const data = await response.json();
+      setSentiment(data);
+    } catch (error) {
+      console.error('Error fetching sentiment:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    setMounted(true);
+    fetchSentiment();
+    // Update sentiment every 5 minutes
+    const interval = setInterval(fetchSentiment, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <section className="mb-12">
@@ -34,10 +47,37 @@ export default function HeroSection() {
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h2 className="text-lg font-semibold mb-2">Market Sentiment</h2>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-blue-600">{sentiment.classification}</span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-2xl font-bold ${
+                    sentiment.classification === 'Extreme Fear' ? 'text-red-600' :
+                    sentiment.classification === 'Fear' ? 'text-orange-600' :
+                    sentiment.classification === 'Neutral' ? 'text-blue-600' :
+                    sentiment.classification === 'Greed' ? 'text-green-600' :
+                    'text-emerald-600'
+                  }`}>
+                    {sentiment.classification}
+                  </span>
+                  {loading && (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent" />
+                  )}
+                </div>
                 <span className="text-sm text-gray-500">
                   Updated {formatDistanceToNow(new Date(sentiment.timestamp))} ago
                 </span>
+              </div>
+              <div className="mt-4">
+                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-500 ${
+                      sentiment.classification === 'Extreme Fear' ? 'bg-red-600' :
+                      sentiment.classification === 'Fear' ? 'bg-orange-600' :
+                      sentiment.classification === 'Neutral' ? 'bg-blue-600' :
+                      sentiment.classification === 'Greed' ? 'bg-green-600' :
+                      'bg-emerald-600'
+                    }`}
+                    style={{ width: `${sentiment.value}%` }}
+                  />
+                </div>
               </div>
             </div>
           </div>

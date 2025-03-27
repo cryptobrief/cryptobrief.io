@@ -2,38 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 import type { Article } from '@/lib/types';
 
 export default function NewsGrid() {
-  const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
-
-    // Fetch the dynamic articles and limit to 9
-    async function fetchArticles() {
+    async function loadArticles() {
       try {
-        const fetchedArticles: Article[] = await fetch('/api/news').then(res => res.json());
-        // Limit to the first 9 articles
-        setArticles(fetchedArticles.slice(0, 9));
+        const response = await fetch('/api/articles');
+        const data = await response.json();
+        setArticles(data);
       } catch (error) {
-        console.error('Error fetching articles:', error);
-        setArticles([]); // Handle errors by showing no articles or fallback content
+        console.error('Error loading articles:', error);
+      } finally {
+        setLoading(false);
       }
     }
 
-    fetchArticles();
+    loadArticles();
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
-
-  if (articles.length === 0) {
+  if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(9)].map((_, i) => (
           <div key={i} className="card animate-pulse">
             <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
             <div className="space-y-3">
@@ -50,18 +45,31 @@ export default function NewsGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {articles.map((article) => (
-        <Link key={article.id} href={article.url}>
-          <article className="card cursor-pointer hover:shadow-lg transition-shadow">
-            <img
-              src={article.imageUrl}
-              alt={article.title}
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
-            <h2 className="text-xl font-bold mb-2">{article.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{article.summary}</p>
-            <div className="flex items-center justify-between text-sm text-gray-500">
-              <span>{article.source}</span>
-              <span>{article.publishedAt}</span>
+        <Link href={`/news/${article.slug}`} key={article.slug}>
+          <article className="card hover:shadow-xl transition-shadow h-full">
+            <div className="relative">
+              <div className="aspect-video bg-gray-200 dark:bg-gray-800 rounded-lg mb-4 overflow-hidden">
+                <img
+                  src={article.imageUrl || 'https://images.unsplash.com/photo-1518186233392-c232efbf2373'}
+                  alt={article.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {article.categories?.[0] && (
+                <span className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-sm">
+                  {article.categories[0]}
+                </span>
+              )}
+            </div>
+            <h2 className="text-xl font-bold mb-2 line-clamp-2">{article.title}</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+              {article.description}
+            </p>
+            <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
+              <span>{article.source || 'CryptoBrief'}</span>
+              <time dateTime={article.date}>
+                {formatDistanceToNow(new Date(article.date))} ago
+              </time>
             </div>
           </article>
         </Link>

@@ -1,7 +1,17 @@
 import { Suspense } from 'react';
-import PortfolioTracker from '@/components/tools/PortfolioTracker';
-import EventsCalendar from '@/components/tools/EventsCalendar';
-import CurrencyConverter from '@/components/tools/CurrencyConverter';
+import dynamic from 'next/dynamic';
+
+const PortfolioTracker = dynamic(() => import('@/components/tools/PortfolioTracker'), {
+  loading: () => <div className="card animate-pulse h-64" />
+});
+
+const EventsCalendar = dynamic(() => import('@/components/tools/EventsCalendar'), {
+  loading: () => <div className="card animate-pulse h-96" />
+});
+
+const CurrencyConverter = dynamic(() => import('@/components/tools/CurrencyConverter'), {
+  loading: () => <div className="card animate-pulse h-64" />
+});
 
 export default function ToolsPage() {
   return (
@@ -14,18 +24,24 @@ export default function ToolsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Suspense fallback={<div className="card animate-pulse h-64" />}>
-          <PortfolioTracker />
-        </Suspense>
+        <div>
+          <Suspense fallback={<div className="card animate-pulse h-64" />}>
+            <PortfolioTracker />
+          </Suspense>
+        </div>
         
-        <Suspense fallback={<div className="card animate-pulse h-64" />}>
-          <CurrencyConverter />
-        </Suspense>
+        <div>
+          <Suspense fallback={<div className="card animate-pulse h-64" />}>
+            <CurrencyConverter />
+          </Suspense>
+        </div>
       </div>
 
-      <Suspense fallback={<div className="card animate-pulse h-96" />}>
-        <EventsCalendar />
-      </Suspense>
+      <div>
+        <Suspense fallback={<div className="card animate-pulse h-96" />}>
+          <EventsCalendar />
+        </Suspense>
+      </div>
     </div>
   );
 }
