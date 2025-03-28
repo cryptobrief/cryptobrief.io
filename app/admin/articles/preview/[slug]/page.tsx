@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { getCachedArticleBySlug } from '@/lib/news-cache';
 import ApproveButton from '@/components/ApproveButton';
 
