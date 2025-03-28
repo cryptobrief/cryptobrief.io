@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { MarketSentiment } from '@/lib/types';
 
+export const runtime = 'edge';
+
 // Helper function to calculate sentiment
 function calculateSentiment(): MarketSentiment {
   // This is a simplified example. In production, you would:

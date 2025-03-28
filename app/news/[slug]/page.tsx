@@ -2,9 +2,10 @@ import { notFound } from 'next/navigation';
 import { getArticle } from '@/lib/articles';
 import Article from '@/components/Article';
 
+export const runtime = 'edge';
 export const dynamicParams = true;
 
-export default async function Page({
+export default async function ArticlePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
