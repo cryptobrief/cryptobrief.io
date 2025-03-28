@@ -4,9 +4,8 @@ import Article from '@/components/Article';
 
 export const runtime = 'edge';
 export const dynamicParams = true;
-export const dynamic = 'force-dynamic'; // <- helps with build/runtime consistency
 
-export default async function Page({
+export default async function ArticlePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -15,8 +14,7 @@ export default async function Page({
     const { slug } = await params;
     const article = await getArticle(slug);
 
-    if (!article || !article.title || !article.content) {
-      console.error('[ArticlePage Error] Invalid or missing article:', { slug, article });
+    if (!article || !article.title) {
       return notFound();
     }
 
@@ -33,7 +31,7 @@ export default async function Page({
       </div>
     );
   } catch (error) {
-    console.error('[ArticlePage Error] Exception while loading article:', error);
+    console.error('Error loading article:', error);
     return notFound();
   }
 }
