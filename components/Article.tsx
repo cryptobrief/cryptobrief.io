@@ -78,12 +78,10 @@ export default function Article({ title, date, description, content, categories 
             </div>
             
             <div className="prose dark:prose-invert max-w-none">
-              {content && typeof content === 'string' ? (
+              {typeof content === 'string' ? (
                 <div dangerouslySetInnerHTML={{ __html: content }} />
-              ) : content && typeof content === 'object' ? (
-                <MDXRemoteWrapper source={content} />
               ) : (
-                <p className="text-red-500">⚠️ Unable to render article content.</p>
+                <MDXRemoteWrapper source={content} />
               )}
             </div>
 
