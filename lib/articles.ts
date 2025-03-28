@@ -1,4 +1,3 @@
-import path from 'path';
 import type { Article } from './types';
 
 // Mock data for edge runtime
