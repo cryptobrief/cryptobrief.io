@@ -1,4 +1,3 @@
-console.log('✅ SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 export const runtime = 'edge';
 
 import fs from 'fs';
