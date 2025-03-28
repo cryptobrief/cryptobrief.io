@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import type { Article } from '@/lib/types';
 
+// Type Guard for checking if data is an array of Articles
+function isArticleArray(data: any): data is Article[] {
+  return Array.isArray(data) && data.every((item) => item.slug && item.title);
+}
+
 export default function NewsGrid() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,9 +19,19 @@ export default function NewsGrid() {
       try {
         const response = await fetch('/api/articles');
         const data = await response.json();
-        setArticles(data);
+
+        // Detailed logging of the fetched data
+        console.log('Fetched data:', data);  // Log the data for debugging
+
+        if (isArticleArray(data)) {
+          setArticles(data);
+        } else {
+          console.error('Expected array but got:', data);
+          setArticles([]); // fallback to empty array
+        }
       } catch (error) {
         console.error('Error loading articles:', error);
+        setArticles([]); // fallback to empty array on error
       } finally {
         setLoading(false);
       }
