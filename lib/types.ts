@@ -1,15 +1,15 @@
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
 export interface Article {
-  id: string;
+  id?: string;
+  slug: string;
   title: string;
-  summary: string;
+  description: string;
   content: string | MDXRemoteSerializeResult;
-  url: string;
-  imageUrl: string;
-  source: string;
-  category: string;
-  publishedAt: string;
+  url?: string;
+  imageUrl?: string;
+  source?: string;
+  date: string;
   categories?: string[];
   tags?: string[];
 }

@@ -2,17 +2,19 @@ import { Suspense } from 'react';
 import { getAllArticles } from '@/lib/articles';
 import Link from 'next/link';
 
-interface SearchPageProps {
-  searchParams: { q?: string };
-}
+export const dynamic = 'force-dynamic';
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const query = searchParams.q?.toLowerCase() || '';
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q = '' } = await searchParams;
   const articles = await getAllArticles();
   
   const searchResults = articles.filter(article => {
     const searchableText = `${article.title} ${article.description} ${article.categories?.join(' ')} ${article.tags?.join(' ')}`.toLowerCase();
-    return searchableText.includes(query);
+    return searchableText.includes(q.toLowerCase());
   });
 
   return (
@@ -20,9 +22,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="card">
         <h1 className="text-3xl font-bold mb-6">Search Results</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
-          {query ? (
+          {q ? (
             <>
-              Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for &quot;{query}&quot;
+              Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for &quot;{q}&quot;
             </>
           ) : (
             'Please enter a search term'
@@ -52,10 +54,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </Link>
         ))}
 
-        {query && searchResults.length === 0 && (
+        {q && searchResults.length === 0 && (
           <div className="card">
             <p className="text-gray-600 dark:text-gray-400">
-              No results found for &quot;{query}&quot;. Try a different search term.
+              No results found for &quot;{q}&quot;. Try a different search term.
             </p>
           </div>
         )}

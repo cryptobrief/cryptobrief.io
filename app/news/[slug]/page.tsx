@@ -2,9 +2,20 @@ import { notFound } from 'next/navigation';
 import { getArticle } from '@/lib/articles';
 import Article from '@/components/Article';
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
+export const dynamicParams = true;
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   try {
-    const article = await getArticle(params.slug);
+    const { slug } = await params;
+    const article = await getArticle(slug);
+
+    if (!article || !article.title) {
+      return notFound();
+    }
 
     return (
       <div className="max-w-3xl mx-auto">
@@ -20,6 +31,6 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     );
   } catch (error) {
     console.error('Error loading article:', error);
-    notFound();
+    return notFound();
   }
 }

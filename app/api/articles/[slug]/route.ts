@@ -2,28 +2,43 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { serialize } from 'next-mdx-remote/serialize';
 
 const articlesDirectory = path.join(process.cwd(), 'content/articles');
 
-export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function GET() {
   try {
-    const slug = params.slug;
-    const fullPath = path.join(articlesDirectory, `${slug}.mdx`);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const { data, content } = matter(fileContents);
-    const mdxSource = await serialize(content);
+    const files = fs.readdirSync(articlesDirectory);
+    const articles = await Promise.all(
+      files.map(async (fileName) => {
+        const slug = fileName.replace(/\.mdx$/, '');
+        const fullPath = path.join(articlesDirectory, fileName);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const { data, content } = matter(fileContents);
+        
+        // Get the first paragraph as a summary if no description is provided
+        const summary = data.description || content.split('\n')[0];
 
-    return NextResponse.json({
-      slug,
-      content: mdxSource,
-      ...data,
+        return {
+          slug,
+          ...data,
+          description: summary,
+          imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1518186233392-c232efbf2373',
+        };
+      })
+    );
+
+    // Sort articles by date in descending order (newest first)
+    const sortedArticles = articles.sort((a: any, b: any) => {
+      if (new Date(a.date) < new Date(b.date)) {
+        return 1;
+      } else {
+        return -1;
+      }
     });
+
+    return NextResponse.json(sortedArticles);
   } catch (error) {
-    console.error('Error fetching article:', error);
-    return NextResponse.json({ error: 'Article not found' }, { status: 404 });
+    console.error('Error fetching articles:', error);
+    return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 });
   }
 }

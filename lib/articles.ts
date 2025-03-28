@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
+import type { Article } from './types';
 
 const articlesDirectory = path.join(process.cwd(), 'content/articles');
 
@@ -20,8 +21,12 @@ export async function getArticle(slug: string) {
 
     return {
       slug,
+      title: data.title,
+      date: data.date,
+      description: data.description,
+      categories: data.categories || [],
+      tags: data.tags || [],
       content: mdxSource,
-      ...data,
     };
   } catch (error) {
     console.error('Error getting article:', error);
@@ -29,7 +34,7 @@ export async function getArticle(slug: string) {
   }
 }
 
-export async function getAllArticles() {
+export async function getAllArticles(): Promise<Article[]> {
   const files = fs.readdirSync(articlesDirectory);
   const articles = files.map((fileName) => {
     const slug = fileName.replace(/\.mdx$/, '');
@@ -42,14 +47,18 @@ export async function getAllArticles() {
 
     return {
       slug,
-      ...data,
+      title: data.title,
+      date: data.date,
       description: summary,
+      content: content,
+      categories: data.categories || [],
+      tags: data.tags || [],
       imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1518186233392-c232efbf2373',
     };
   });
 
   // Sort articles by date in descending order (newest first)
-  return articles.sort((a: any, b: any) => {
+  return articles.sort((a, b) => {
     if (new Date(a.date) < new Date(b.date)) {
       return 1;
     } else {
